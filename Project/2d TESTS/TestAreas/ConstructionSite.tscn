@@ -1,0 +1,30 @@
+[gd_scene load_steps=3 format=3 uid="uid://ben6pemb7iel8"]
+
+[ext_resource type="PackedScene" uid="uid://iimifmxo7te0" path="res://2d TESTS/Objects/SimpleParts/Piston.tscn" id="1_11aia"]
+[ext_resource type="PackedScene" uid="uid://dxsnt77v6ii48" path="res://2d TESTS/Objects/SimpleParts/Bolt.tscn" id="2_y50r4"]
+
+[node name="ConstructionSite" type="Node2D"]
+
+[node name="Piston3" parent="." instance=ExtResource("1_11aia")]
+position = Vector2(1064, 640)
+rotation = -1.70664
+
+[node name="Piston4" parent="." instance=ExtResource("1_11aia")]
+position = Vector2(735, 642)
+rotation = -1.44472
+
+[node name="Piston5" parent="." instance=ExtResource("1_11aia")]
+position = Vector2(896, 581)
+rotation = 1.56147
+
+[node name="Bolt" parent="." instance=ExtResource("2_y50r4")]
+position = Vector2(703, 897)
+scale = Vector2(1.96, 1.96)
+
+[node name="Bolt2" parent="." instance=ExtResource("2_y50r4")]
+position = Vector2(1097, 890)
+scale = Vector2(1.96, 1.96)
+
+[node name="Bolt3" parent="." instance=ExtResource("2_y50r4")]
+position = Vector2(891, 326)
+scale = Vector2(1.96, 1.96)

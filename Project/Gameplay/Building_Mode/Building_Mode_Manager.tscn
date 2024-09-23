@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://kqk2618upqdj"]
+
+[ext_resource type="Script" path="res://Gameplay/Building_Mode/Building_Mode_Manager.gd" id="1_nt7pt"]
+
+[node name="BuildingModeManager" type="Node3D"]
+script = ExtResource("1_nt7pt")

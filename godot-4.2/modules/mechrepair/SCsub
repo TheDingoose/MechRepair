@@ -1,0 +1,4 @@
+Import('env')
+
+src_list = ["register_types.cpp", "parts/part.cpp", "parts/hinge.cpp", "debug/part_debug_draw.cpp"]
+env.add_source_files(env.modules_sources, src_list)

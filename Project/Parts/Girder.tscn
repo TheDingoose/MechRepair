@@ -1,0 +1,22 @@
+[gd_scene load_steps=4 format=3 uid="uid://corya62fkl1a5"]
+
+[ext_resource type="Script" path="res://Parts/BonePart/BonePart.gd" id="1_0yjyb"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_2oint"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_yci7n"]
+
+[node name="Girder" type="Part"]
+script = ExtResource("1_0yjyb")
+
+[node name="Mesh" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, 0, 0, 0)
+mesh = SubResource("BoxMesh_2oint")
+
+[node name="BoneArea" type="Area3D" parent="."]
+transform = Transform3D(0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, 0, 0, 0)
+
+[node name="BoneCollision" type="CollisionShape3D" parent="BoneArea"]
+shape = SubResource("BoxShape3D_yci7n")
+
+[connection signal="input_event" from="BoneArea" to="." method="_on_bone_collision_input_event"]

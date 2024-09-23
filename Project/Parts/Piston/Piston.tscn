@@ -1,0 +1,48 @@
+[gd_scene load_steps=8 format=3 uid="uid://dhui70jlikor3"]
+
+[ext_resource type="Script" path="res://Parts/Piston/Piston.gd" id="1_2iyr1"]
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_dvjjn"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_cv8uu"]
+albedo_color = Color(0.317647, 0.317647, 0.317647, 1)
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_nsbe8"]
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_m2sww"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_wx506"]
+albedo_color = Color(0.501961, 0.501961, 0.501961, 1)
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_xboh4"]
+
+[node name="Piston" type="Node3D"]
+script = ExtResource("1_2iyr1")
+
+[node name="Barrel" type="MeshInstance3D" parent="."]
+mesh = SubResource("CylinderMesh_dvjjn")
+skeleton = NodePath("../Rod")
+surface_material_override/0 = SubResource("StandardMaterial3D_cv8uu")
+
+[node name="BarrelCollision" type="Area3D" parent="Barrel"]
+monitoring = false
+
+[node name="BarrelCollisionShape" type="CollisionShape3D" parent="Barrel/BarrelCollision"]
+shape = SubResource("CylinderShape3D_nsbe8")
+
+[node name="BarrelConnection" type="Node3D" parent="Barrel"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
+
+[node name="Rod" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.520216, 0, 0, 0, 1, 0, 0, 0, 0.520216, 0, 0.3, 0)
+mesh = SubResource("CylinderMesh_m2sww")
+surface_material_override/0 = SubResource("StandardMaterial3D_wx506")
+
+[node name="RodCollision" type="Area3D" parent="Rod"]
+monitoring = false
+
+[node name="RodCollsionShape" type="CollisionShape3D" parent="Rod/RodCollision"]
+shape = SubResource("CylinderShape3D_xboh4")
+
+[node name="RodConnection" type="Node3D" parent="Rod"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)

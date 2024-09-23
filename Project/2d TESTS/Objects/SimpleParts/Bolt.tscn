@@ -1,0 +1,27 @@
+[gd_scene load_steps=4 format=3 uid="uid://dxsnt77v6ii48"]
+
+[ext_resource type="Texture2D" uid="uid://b68ty4wk5oiat" path="res://2d TESTS/Objects/SimpleParts/Bolt/TEMPBolt.png" id="1_0as0e"]
+[ext_resource type="Script" path="res://2d TESTS/Objects/SimpleParts/Bolt/Bolt.gd" id="1_pguok"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_8tu2t"]
+
+[node name="Bolt" type="Node2D"]
+script = ExtResource("1_pguok")
+
+[node name="Sprite" type="Sprite2D" parent="."]
+scale = Vector2(0.159999, 0.159999)
+texture = ExtResource("1_0as0e")
+
+[node name="Collider" type="Area2D" parent="Sprite"]
+scale = Vector2(12.7501, 12.5001)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Sprite/Collider"]
+shape = SubResource("RectangleShape2D_8tu2t")
+
+[node name="Sprite2" type="Sprite2D" parent="."]
+visible = false
+position = Vector2(0, 19)
+scale = Vector2(0.047973, 0.133032)
+texture = ExtResource("1_0as0e")
+
+[connection signal="input_event" from="Sprite/Collider" to="." method="_on_collider_input_event"]

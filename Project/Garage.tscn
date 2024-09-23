@@ -1,0 +1,31 @@
+[gd_scene load_steps=3 format=3 uid="uid://dqbsx0mm6e4bu"]
+
+[ext_resource type="PackedScene" uid="uid://corya62fkl1a5" path="res://Parts/Girder.tscn" id="1_dtqrx"]
+[ext_resource type="Script" path="res://Gameplay/Building_Mode/BuildingCamera.gd" id="1_ojg0v"]
+
+[node name="Garage" type="Node3D"]
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(0.747995, -0.289741, 0.597121, 0, 0.89968, 0.436551, -0.663704, -0.326538, 0.672956, 3.41999, 2.33736, 3.46677)
+script = ExtResource("1_ojg0v")
+
+[node name="Girder" parent="." instance=ExtResource("1_dtqrx")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0224127, 0, 0.00177296)
+
+[node name="Girder5" parent="." instance=ExtResource("1_dtqrx")]
+transform = Transform3D(1, 0, 0, 0, 0.864292, -0.50299, 0, 0.50299, 0.864292, -0.384465, 0, 0.00177296)
+
+[node name="Girder6" parent="Girder5" instance=ExtResource("1_dtqrx")]
+transform = Transform3D(1, 0, 0, 0, 0.852121, -0.523347, 0, 0.523347, 0.852121, -0.332993, 0.0109992, -0.00640116)
+
+[node name="Girder7" parent="Girder5/Girder6" instance=ExtResource("1_dtqrx")]
+transform = Transform3D(1, 0, 0, 0, 0.896749, -0.442539, 0, 0.442539, 0.896749, -0.346968, 0, 0)
+
+[node name="Girder2" parent="." instance=ExtResource("1_dtqrx")]
+transform = Transform3D(0.999842, -0.0161214, -0.00742491, 0.0177491, 0.908153, 0.418261, 0, -0.418327, 0.908297, 0.249999, 0, 0.00177296)
+
+[node name="Girder3" parent="." instance=ExtResource("1_dtqrx")]
+transform = Transform3D(1, 0, 0, 0, 0.336487, 0.941688, 0, -0.941688, 0.336487, 0.523636, 0, 0.00177296)
+
+[node name="Girder4" parent="." instance=ExtResource("1_dtqrx")]
+transform = Transform3D(1, 0, 0, 0, -0.0097737, 0.999952, 0, -0.999952, -0.0097737, 0.792196, 0, 0.00177296)

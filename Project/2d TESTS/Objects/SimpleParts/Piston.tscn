@@ -1,0 +1,45 @@
+[gd_scene load_steps=7 format=3 uid="uid://iimifmxo7te0"]
+
+[ext_resource type="Script" path="res://2d TESTS/Objects/SimpleParts/Piston.gd" id="1_h85rf"]
+
+[sub_resource type="Gradient" id="Gradient_tsfms"]
+colors = PackedColorArray(0.58211, 0.613594, 0.724862, 1, 0.625597, 0.625597, 0.625597, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_ktt40"]
+gradient = SubResource("Gradient_tsfms")
+width = 2
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_tsrnm"]
+size = Vector2(1.9997, 0.995918)
+
+[sub_resource type="Gradient" id="Gradient_x35ex"]
+colors = PackedColorArray(0.224404, 0.275342, 0.379847, 1, 0.342643, 0.321534, 0.343612, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_vvmme"]
+gradient = SubResource("Gradient_x35ex")
+width = 2
+
+[node name="Piston" type="Node2D"]
+script = ExtResource("1_h85rf")
+
+[node name="Inner" type="Sprite2D" parent="."]
+position = Vector2(365, 1)
+scale = Vector2(208.418, 40)
+texture = SubResource("GradientTexture1D_ktt40")
+
+[node name="InnerCollider" type="Area2D" parent="Inner"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Inner/InnerCollider"]
+shape = SubResource("RectangleShape2D_tsrnm")
+
+[node name="Outer" type="Sprite2D" parent="."]
+position = Vector2(0, 8.47033e-22)
+scale = Vector2(209.531, 61.25)
+texture = SubResource("GradientTexture1D_vvmme")
+
+[node name="OuterCollider" type="Area2D" parent="Outer"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Outer/OuterCollider"]
+shape = SubResource("RectangleShape2D_tsrnm")
+
+[connection signal="input_event" from="Inner/InnerCollider" to="." method="_on_inner_collider_input_event"]
