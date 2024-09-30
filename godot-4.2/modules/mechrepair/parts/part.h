@@ -18,15 +18,19 @@ protected:
 
 public:
 
+	TypedArray<Hinge> hinges;
+	float weight = 1.0f;
+
 	void add_hinge(Hinge* h);
+	void remove_hinge(Hinge* h);
 	bool lock_translation;
 	bool lock_rotation;
 
-	TypedArray<Hinge> hinges;
-
-	bool solve(Transform3D new_transform);
 	
-	float weight = 1.0f;
+
+	bool solve_to(Transform3D new_transform);
+
+	void attach_part_create_average_hinge(Part *p);
 };
 
 

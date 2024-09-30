@@ -11,6 +11,10 @@ func _enter_tree():
 	var h = Hinge.new()
 	h.set_offset(Vector3(0,1,0), get_instance_id())
 	add_hinge(h)
+	
+	if (self == $"../Girder4"):
+		attach_part_create_average_hinge($"../Girder3")
+	
 	GlobalPartDebugDraw.part_to_lines(self)
 
 func _process(delta) :
@@ -24,7 +28,12 @@ func _input(event):
 		var b = camera.basis.z
 		var movepos = camera.project_position(get_viewport().get_mouse_position(), abs((b).dot(a)))
 		
-		global_position = movepos - grab_offset_position
+		var current_trans = global_transform
+		current_trans.origin = movepos - grab_offset_position	
+		
+		solve_to(current_trans)
+		
+		#global_position = movepos - grab_offset_position
 		
 		GlobalPartDebugDraw.clear_lines(true, false)
 		GlobalPartDebugDraw.part_to_lines(self)

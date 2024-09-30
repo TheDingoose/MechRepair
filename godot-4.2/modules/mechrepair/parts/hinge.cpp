@@ -26,7 +26,23 @@ Vector3 Hinge::get_offset(ObjectID part_id) {
 	return offsets[part_id];
 }
 
+Dictionary Hinge::get_other_offsets(ObjectID part_id) {
+	Dictionary sets;
+	for (int i = 0; i < offsets.size(); i++) {
+		if (offsets.keys()[i] != part_id) {
+			sets[offsets.keys()[i]] = offsets[offsets.keys()[i]];
+		}
+	}
+	return sets;
+}
+
 void Hinge::detach_part(ObjectID part_id) {
 	offsets.erase(part_id);
 	return;
+}
+
+Array Hinge::get_other_parts(ObjectID part_id) {
+	Array o = offsets.keys();
+	o.erase(part_id);
+	return o;
 }
