@@ -26,7 +26,7 @@ public:
 	bool lock_translation;
 	bool lock_rotation;
 
-	
+	Hinge* get_hinge_to_part(ObjectID part_id);
 
 	bool solve_to(Transform3D new_transform);
 

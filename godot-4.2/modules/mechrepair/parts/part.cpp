@@ -8,6 +8,8 @@ void Part::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("remove_hinge", "hinge"), &Part::remove_hinge);
 	ClassDB::bind_method(D_METHOD("solve_to", "new_transform"), &Part::solve_to);
 	ClassDB::bind_method(D_METHOD("attach_part_create_average_hinge", "part"), &Part::attach_part_create_average_hinge);
+	ClassDB::bind_method(D_METHOD("get_hinge_to_part", "part_id"), &Part::get_hinge_to_part);
+
 }
 
 void Part::add_hinge(Hinge* h) {
@@ -17,6 +19,16 @@ void Part::add_hinge(Hinge* h) {
 void Part::remove_hinge(Hinge *h) {
 	h->detach_part(get_instance_id());
 	hinges.erase(h);
+}
+
+Hinge* Part::get_hinge_to_part(ObjectID part_id) {
+	
+	for (int i = 0; i < hinges.size(); i++) {
+		if (cast_to<Hinge>(hinges[i])->transforms.has(part_id)) {
+			return cast_to<Hinge>(hinges[i]);
+		}
+	}
+	return nullptr;
 }
 
 bool Part::solve_to(Transform3D new_transform) {
@@ -34,30 +46,15 @@ bool Part::solve_to(Transform3D new_transform) {
 			//just solid hinge for now
 
 			Transform3D t = cast_to<Part>(ObjectDB::get_instance(connections[j]))->get_global_transform();
-			//Transform3D a = part_transforms[this];
-			
 			//Very annoying to operate on transforms gotten from dictionaries
 			t.origin = Vector3(0,0,0);
-			
 
 			Transform3D base = part_transforms[this];
-			Vector3 hinge_pos_global = base.xform(cast_to<Hinge>(hinges[i])->get_offset(get_instance_id()));
 
+			Vector3 hinge_pos_global = base.xform(cast_to<Hinge>(hinges[i])->get_transform(get_instance_id()).origin);
 
+			t.origin = hinge_pos_global - t.basis.xform(cast_to<Hinge>(hinges[i])->get_transform(connections[j]).origin);
 
-			t.origin = hinge_pos_global - t.basis.xform(cast_to<Hinge>(hinges[i])->get_offset(connections[j]));
-
-			//t.origin = hinge_pos_global + t.xform(-cast_to<Hinge>(hinges[i])->get_offset(connections[j])); 
-
-
-			//t.origin = base.xform(cast_to<Hinge>(hinges[i])->get_offset(get_instance_id()) - cast_to<Hinge>(hinges[i])->get_offset(connections[j]));
-
-
-
-			//t.origin = a.get_origin() + cast_to<Hinge>(hinges[i])->get_offset(get_instance_id()) - cast_to<Hinge>(hinges[i])->get_offset(connections[j]);
-			//t.origin = a.get_origin() + cast_to<Hinge>(hinges[i])->get_offset(get_instance_id()) - cast_to<Hinge>(hinges[i])->get_offset(connections[j]);
-
-			//
 			part_transforms[cast_to<Part>(ObjectDB::get_instance(connections[j]))] = t;
 		}
 	}
@@ -81,18 +78,17 @@ bool Part::solve_to(Transform3D new_transform) {
 void Part::attach_part_create_average_hinge(Part *p) {
 	Hinge* h = new Hinge;
 
-	print_line(get_global_position());
-	print_line(p->get_global_position());
-
 	Vector3 center = (get_global_position() + p->get_global_position()) * Vector3(0.5, 0.5, 0.5);
 	add_hinge(h);
 	p->add_hinge(h);
-	print_line(center);
-	h->set_offset(get_global_transform().inverse().xform(center), get_instance_id());
-	print_line(h->get_offset(get_instance_id()));
 
-	h->set_offset(p->get_global_transform().inverse().xform(center), p->get_instance_id());
-	print_line(h->get_offset(p->get_instance_id()));
+	Transform3D a;
+	a.origin = get_global_transform().inverse().xform(center);
+
+	h->set_transform(a, get_instance_id());
+
+	a.origin = p->get_global_transform().inverse().xform(center);
+	h->set_transform(a, p->get_instance_id());
 
 	h = nullptr;
 }

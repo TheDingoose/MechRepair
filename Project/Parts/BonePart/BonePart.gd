@@ -8,9 +8,13 @@ func _init():
 	pass
 
 func _enter_tree():
-	var h = Hinge.new()
-	h.set_offset(Vector3(0,1,0), get_instance_id())
-	add_hinge(h)
+	#var h = Hinge.new()
+	#h.set_offset(Vector3(0,1,0), get_instance_id())
+	#add_hinge(h)
+	
+	
+	if (self == $"../Girder3"):
+		attach_part_create_average_hinge($"../Girder2")
 	
 	if (self == $"../Girder4"):
 		attach_part_create_average_hinge($"../Girder3")
@@ -31,7 +35,17 @@ func _input(event):
 		var current_trans = global_transform
 		current_trans.origin = movepos - grab_offset_position	
 		
+		if Input.is_key_pressed(KEY_R):
+			if (self == $"../Girder2"):
+				var hingey = get_hinge_to_part($"../Girder3".get_instance_id())
+				hingey.set_transform(hingey.get_transform($"../Girder3".get_instance_id()).rotated(Vector3(0,0,1), 1), $"../Girder3".get_instance_id())
+			pass
+		
+		
 		solve_to(current_trans)
+		
+	
+		
 		
 		#global_position = movepos - grab_offset_position
 		

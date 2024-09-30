@@ -16,7 +16,7 @@ public:
 
 	
 
-	Dictionary offsets;
+	Dictionary transforms;
 
 	float weight = 1.f;
 	//offset
@@ -26,9 +26,9 @@ public:
 	//parts
 	//rotation limit
 
-	void set_offset(Vector3 offset, ObjectID part_id);
-	Vector3 get_offset(ObjectID part_id);
-	Dictionary get_other_offsets(ObjectID part_id);
+	void set_transform(Transform3D transform, ObjectID part_id);
+	Transform3D get_transform(ObjectID part_id);
+	Dictionary get_other_transforms(ObjectID part_id);
 	void detach_part(ObjectID part_id);
 
 	Array get_other_parts(ObjectID part_id);
