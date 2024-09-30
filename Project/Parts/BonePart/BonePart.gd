@@ -12,7 +12,9 @@ func _enter_tree():
 	#h.set_offset(Vector3(0,1,0), get_instance_id())
 	#add_hinge(h)
 	
-	
+	if (self == $"../Girder2"):
+		attach_part_create_average_hinge($"../Girder")
+		
 	if (self == $"../Girder3"):
 		attach_part_create_average_hinge($"../Girder2")
 	

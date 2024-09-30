@@ -45,20 +45,12 @@ bool Part::solve_to(Transform3D new_transform) {
 		for (int j = 0; j < connections.size(); j++) {
 			//just solid hinge for now
 
-			Transform3D t = cast_to<Part>(ObjectDB::get_instance(connections[j]))->get_global_transform();
-			//Very annoying to operate on transforms gotten from dictionaries
-			t.origin = Vector3(0,0,0);
-
-			Transform3D base = part_transforms[this];
-
-			Vector3 hinge_pos_global = base.xform(cast_to<Hinge>(hinges[i])->get_transform(get_instance_id()).origin);
-
-			t.origin = hinge_pos_global - t.basis.xform(cast_to<Hinge>(hinges[i])->get_transform(connections[j]).origin);
-
-			part_transforms[cast_to<Part>(ObjectDB::get_instance(connections[j]))] = t;
+			Transform3D target = part_transforms[this];
+			target = target * cast_to<Hinge>(hinges[i])->get_transform(this->get_instance_id()).inverse();
+			target = target * cast_to<Hinge>(hinges[i])->get_transform(cast_to<Part>(ObjectDB::get_instance(connections[j]))->get_instance_id());
+			part_transforms[cast_to<Part>(ObjectDB::get_instance(connections[j]))] = target;
 		}
 	}
-
 
 	//get a parts movement capabilities
 	//get is as close as possible to goal
@@ -83,11 +75,16 @@ void Part::attach_part_create_average_hinge(Part *p) {
 	p->add_hinge(h);
 
 	Transform3D a;
-	a.origin = get_global_transform().inverse().xform(center);
+	a = get_global_transform();
+	a.origin = (get_global_position() - center);
+
 
 	h->set_transform(a, get_instance_id());
 
-	a.origin = p->get_global_transform().inverse().xform(center);
+
+	a = p->get_global_transform();
+	a.origin =(p->get_global_position() - center);
+
 	h->set_transform(a, p->get_instance_id());
 
 	h = nullptr;
