@@ -28,7 +28,8 @@ public:
 
 	Hinge* get_hinge_to_part(ObjectID part_id);
 
-	bool solve_to(Transform3D new_transform);
+	Array solve_to(Transform3D new_transform);
+	bool solve_recursive(Dictionary& part_transforms, Dictionary& part_solved, int& simulation_steps);
 
 	void attach_part_create_average_hinge(Part *p);
 };

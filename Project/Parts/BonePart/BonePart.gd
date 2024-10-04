@@ -44,7 +44,7 @@ func _input(event):
 			pass
 		
 		
-		solve_to(current_trans)
+		var parts = solve_to(current_trans)
 		
 	
 		
@@ -52,7 +52,9 @@ func _input(event):
 		#global_position = movepos - grab_offset_position
 		
 		GlobalPartDebugDraw.clear_lines(true, false)
-		GlobalPartDebugDraw.part_to_lines(self)
+		
+		for p in parts:
+			GlobalPartDebugDraw.part_to_lines(instance_from_id(p))
 		
 	if event is InputEventMouseButton:
 		if !event.pressed and event.button_index == MOUSE_BUTTON_LEFT:

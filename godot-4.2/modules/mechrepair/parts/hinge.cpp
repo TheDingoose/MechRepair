@@ -13,16 +13,6 @@ void Hinge::set_transform(Transform3D transform, ObjectID part_id) {
 }
 
 Transform3D Hinge::get_transform(ObjectID part_id) {
-	//switch (part_id) {
-	//	case part_a:
-	//		return offset_a;
-	//	case part_b:
-	//		return offset_b;
-	//	default:
-	//	//TODO: print some type of warning
-	//		return Vector3(0,0,0);
-	//}
-
 	return transforms[part_id];
 }
 
@@ -43,6 +33,7 @@ void Hinge::detach_part(ObjectID part_id) {
 
 Array Hinge::get_other_parts(ObjectID part_id) {
 	Array o = transforms.keys();
+	//o.pop_at(o.find(part_id));
 	o.erase(part_id);
 	return o;
 }
