@@ -1,7 +1,11 @@
 #include "part.h"
 
 #include "hinge.h"
+#include "../debug/part_debug_draw.h"
 
+
+
+constexpr int MAX_SIMULATION_STEPS = 500;
 
 void Part::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("add_hinge", "hinge"), &Part::add_hinge);
@@ -9,6 +13,13 @@ void Part::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("solve_to", "new_transform"), &Part::solve_to);
 	ClassDB::bind_method(D_METHOD("attach_part_create_average_hinge", "part"), &Part::attach_part_create_average_hinge);
 	ClassDB::bind_method(D_METHOD("get_hinge_to_part", "part_id"), &Part::get_hinge_to_part);
+	ClassDB::bind_method(D_METHOD("set_lock_rotation", "b"), &Part::set_lock_rotation);
+	ClassDB::bind_method(D_METHOD("get_lock_rotation"), &Part::get_lock_rotation);
+	ClassDB::bind_method(D_METHOD("set_lock_translation", "b"), &Part::set_lock_translation);
+	ClassDB::bind_method(D_METHOD("get_lock_translation"), &Part::get_lock_translation);
+
+	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "lock_rotation"), "set_lock_rotation", "get_lock_rotation");
+	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "lock_translation"), "set_lock_translation", "get_lock_translation");
 
 }
 
@@ -31,26 +42,40 @@ Hinge* Part::get_hinge_to_part(ObjectID part_id) {
 	return nullptr;
 }
 
-Array Part::solve_to(Transform3D new_transform) {
+Array Part::solve_to(Transform3D new_transform, PartDebugDraw* debug) {
 	
 	Dictionary part_transforms;
-	Dictionary part_solved;
+	//Dictionary part_solved;
+	Dictionary part_weight;
+	Dictionary part_sim_steps;
+
 	int simulation_steps = 0;
 	float precision = 0.1f;
 
-	part_transforms[get_instance_id()] = new_transform;
+	//TODO: Buffer of hinges/parts to restore if it went wrong
 
-	solve_recursive(part_transforms, part_solved, simulation_steps);
+	part_transforms[get_instance_id()] = new_transform;
+	set_global_transform(new_transform);
+	part_weight[get_instance_id()] = weight;
+
+	//We can control the amount of loops here
+	solve_recursive(part_transforms, part_weight, part_sim_steps, simulation_steps, debug);
 
 	//Apply transforms
-	for (int i = 0; i < part_transforms.size(); i++) {
-		Part* o = cast_to<Part>(ObjectDB::get_instance(part_transforms.keys()[i]));
-		o->set_global_transform(part_transforms[part_transforms.keys()[i]]);
-	}
+	//for (int i = 0; i < part_transforms.size(); i++) {
+	//	Part* o = cast_to<Part>(ObjectDB::get_instance(part_transforms.keys()[i]));
+	//	o->set_global_transform(part_transforms[part_transforms.keys()[i]]);
+	//}
+
 	return part_transforms.keys();
 }
 
-bool Part::solve_recursive(Dictionary& part_transforms, Dictionary& part_solved, int& simulation_steps) {
+bool Part::solve_recursive(Dictionary &part_transforms, Dictionary &part_weight, Dictionary &part_sim_steps, int &simulation_steps, PartDebugDraw *debug) {
+	
+	if (simulation_steps > MAX_SIMULATION_STEPS) {
+		return false;
+	}	
+	
 
 	for (int i = 0; i < hinges.size(); i++) {
 		Array connections = cast_to<Hinge>(hinges[i])->get_other_parts(get_instance_id());
@@ -58,17 +83,80 @@ bool Part::solve_recursive(Dictionary& part_transforms, Dictionary& part_solved,
 		for (int j = 0; j < connections.size(); j++) {
 
 			//just solid hinge for now
+
 			if (!part_transforms.keys().has(connections[j])) {
-				Transform3D target = part_transforms[get_instance_id()];
-				target = target * cast_to<Hinge>(hinges[i])->get_transform(get_instance_id()).inverse();
-				target = target * cast_to<Hinge>(hinges[i])->get_transform(connections[j]);
 
-				part_transforms[connections[j]] = target;
+				if (cast_to<Hinge>(hinges[i])->locked) {
+					Transform3D target = part_transforms[get_instance_id()];
+					target = target * cast_to<Hinge>(hinges[i])->get_transform(get_instance_id()).affine_inverse();
+					target = target * cast_to<Hinge>(hinges[i])->get_transform(connections[j]);
 
-				cast_to<Part>(ObjectDB::get_instance(connections[j]))->solve_recursive(part_transforms, part_solved, simulation_steps);
+					//part_weight[connections[j]] = *cast_to<float>(part_weight[get_instance_id()]) + weight;
+					part_transforms[connections[j]] = target;
+					cast_to<Part>(ObjectDB::get_instance(connections[j]))->set_global_transform(target);
+
+					simulation_steps++;
+					cast_to<Part>(ObjectDB::get_instance(connections[j]))->solve_recursive(part_transforms, part_weight, part_sim_steps, simulation_steps,debug);
+				} else {
+
+					//Just point this part to the goal (center hinge) from part base
+
+					//This part space
+					Transform3D target = part_transforms[get_instance_id()];
+
+					//To world/hinge space
+					target = target * cast_to<Hinge>(hinges[i])->get_transform(get_instance_id()).affine_inverse();
+
+					Transform3D center = cast_to<Part>(ObjectDB::get_instance(connections[j]))->get_global_transform();
+
+					//Calculate the target rotation from center of part
+
+					Transform3D hinge = center * cast_to<Hinge>(hinges[i])->get_transform(connections[j]).affine_inverse();
+
+					debug->add_point(center.get_origin(), Color(1,0,0));
+					debug->add_point(hinge.get_origin(), Color(.75, .25, 0));
+					debug->add_point(target.get_origin(), Color(.5, .5, 0));
+
+
+					Vector3 center_to_hinge = hinge.get_origin() - center.get_origin();
+					Vector3 center_to_target = target.get_origin() - center.get_origin(); 
+					//center_to_hinge = center_to_hinge.normalized();
+					//center_to_target = center_to_target.normalized();
+
+
+					float diff_angle = center_to_hinge.angle_to(center_to_target);
+					Vector3 diff_vector = center_to_hinge.cross(center_to_target).normalized();
+
+					debug->add_line(hinge.get_origin(), hinge.get_origin() + (diff_vector * 0.4), Color(0,1,0));
+					//debug->add_line(hinge.get_origin(), hinge.get_origin() + cast_to<Hinge>(hinges[i])->get_transform(get_instance_id()).inverse().get_basis().xform((diff_vector * 0.4)), Color(1, 1, 0));
+					//debug->add_line(hinge.get_origin(), hinge.get_origin() + cast_to<Hinge>(hinges[i])->get_transform(get_instance_id()).get_basis().xform((diff_vector * 0.4)), Color(1, 0, 0));
+
+
+					print_line(ObjectDB::get_instance(connections[j]));
+					print_line(diff_angle);
+					print_line(diff_vector);
+					print_line("---");
+
+					cast_to<Hinge>(hinges[i])->set_transform(cast_to<Hinge>(hinges[i])->get_transform(connections[j]).rotated(diff_vector, diff_angle), connections[j]);
+
+					part_transforms[connections[j]] = target * cast_to<Hinge>(hinges[i])->get_transform(connections[j]);
+
+					cast_to<Part>(ObjectDB::get_instance(connections[j]))->set_global_transform(part_transforms[connections[j]]);
+					simulation_steps++;
+					cast_to<Part>(ObjectDB::get_instance(connections[j]))->solve_recursive(part_transforms, part_weight, part_sim_steps, simulation_steps, debug);
+				}
 			}
 		}
 	}
+
+	return true;
+}
+
+bool Part::solve_forward(Dictionary &part_transforms, Dictionary &part_weight, Dictionary &part_sim_steps, int &simulation_steps, PartDebugDraw *debug) {
+
+
+
+
 
 	return false;
 }
@@ -94,4 +182,20 @@ void Part::attach_part_create_average_hinge(Part *p) {
 	h->set_transform(a, p->get_instance_id());
 
 	h = nullptr;
+}
+
+void Part::set_lock_rotation(bool b) {
+	lock_rotation = b;
+}
+
+bool Part::get_lock_rotation() {
+	return lock_rotation;
+}
+
+void Part::set_lock_translation(bool b) {
+	lock_translation = b;
+}
+
+bool Part::get_lock_translation() {
+	return lock_translation;
 }

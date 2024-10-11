@@ -10,11 +10,11 @@
 script = ExtResource("1_0yjyb")
 
 [node name="Mesh" type="MeshInstance3D" parent="."]
-transform = Transform3D(0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, 0, 0, 0)
+transform = Transform3D(0.25, 0, 0, 0, 0.1, 0, 0, 0, 0.1, 0, 0, 0)
 mesh = SubResource("BoxMesh_2oint")
 
 [node name="BoneArea" type="Area3D" parent="."]
-transform = Transform3D(0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, 0, 0, 0)
+transform = Transform3D(0.25, 0, 0, 0, 0.1, 0, 0, 0, 0.1, 0, 0, 0)
 
 [node name="BoneCollision" type="CollisionShape3D" parent="BoneArea"]
 shape = SubResource("BoxShape3D_yci7n")

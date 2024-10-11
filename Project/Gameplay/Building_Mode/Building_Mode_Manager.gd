@@ -13,8 +13,6 @@ func _ready():
 func _process(delta):
 	pass
 
-var ooo = 0
-
 func _input(event):
 	pass
 	

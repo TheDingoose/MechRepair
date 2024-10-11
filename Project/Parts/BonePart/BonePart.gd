@@ -28,6 +28,8 @@ func _process(delta) :
 	pass
 
 func _input(event):
+	
+	
 	if event is InputEventMouseMotion and Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and grabbed:
 		var camera = get_viewport().get_camera_3d()
 		var a = (global_position + grab_offset_position) - camera.global_position
@@ -40,18 +42,18 @@ func _input(event):
 		if Input.is_key_pressed(KEY_R):
 			if (self == $"../Girder2"):
 				var hingey = get_hinge_to_part($"../Girder3".get_instance_id())
-				hingey.set_transform(hingey.get_transform($"../Girder3".get_instance_id()).rotated(Vector3(0,0,1), 1), $"../Girder3".get_instance_id())
+				hingey.set_transform(hingey.get_transform($"../Girder3".get_instance_id()).rotated(Vector3(0,0,1), PI /  8), $"../Girder3".get_instance_id())
 			pass
 		
-		
-		var parts = solve_to(current_trans)
+		GlobalPartDebugDraw.clear_lines(true, false)
+		var parts = solve_to(current_trans, GlobalPartDebugDraw)
 		
 	
 		
 		
 		#global_position = movepos - grab_offset_position
 		
-		GlobalPartDebugDraw.clear_lines(true, false)
+		
 		
 		for p in parts:
 			GlobalPartDebugDraw.part_to_lines(instance_from_id(p))
@@ -61,8 +63,15 @@ func _input(event):
 			grabbed = false
 
 func _on_bone_collision_input_event(camera, event, position, normal, shape_idx):
-	if event is InputEventMouseButton:
+	if event is InputEventMouseButton and Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
 			if event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 				grab_offset_position = position - global_position
 				grabbed = true
 				pass
+	if event is InputEventMouseButton and Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT):
+		GlobalPartDebugDraw.clear_lines(true, false)
+		var parts = solve_to(global_transform, GlobalPartDebugDraw)
+		
+		
+		for p in parts:
+			GlobalPartDebugDraw.part_to_lines(instance_from_id(p))
