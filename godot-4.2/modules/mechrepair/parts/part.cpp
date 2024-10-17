@@ -99,47 +99,39 @@ bool Part::solve_recursive(Dictionary &part_transforms, Dictionary &part_weight,
 					cast_to<Part>(ObjectDB::get_instance(connections[j]))->solve_recursive(part_transforms, part_weight, part_sim_steps, simulation_steps,debug);
 				} else {
 
-					//Just point this part to the goal (center hinge) from part base
-
 					//This part space
 					Transform3D target = part_transforms[get_instance_id()];
 
-					//To world/hinge space
+					//To hinge space
 					target = target * cast_to<Hinge>(hinges[i])->get_transform(get_instance_id()).affine_inverse();
 
+					//To part space
 					Transform3D center = cast_to<Part>(ObjectDB::get_instance(connections[j]))->get_global_transform();
 
-					//Calculate the target rotation from center of part
-
+					//To hinge space
 					Transform3D hinge = center * cast_to<Hinge>(hinges[i])->get_transform(connections[j]).affine_inverse();
 
 					debug->add_point(center.get_origin(), Color(1,0,0));
 					debug->add_point(hinge.get_origin(), Color(.75, .25, 0));
 					debug->add_point(target.get_origin(), Color(.5, .5, 0));
 
-
+					//Get different 
 					Vector3 center_to_hinge = hinge.get_origin() - center.get_origin();
 					Vector3 center_to_target = target.get_origin() - center.get_origin(); 
-					//center_to_hinge = center_to_hinge.normalized();
-					//center_to_target = center_to_target.normalized();
 
+					Vector3 diff_vector = center_to_hinge.cross(center_to_target);
+					float diff_angle = Math::atan2(diff_vector.length(), center_to_hinge.dot(center_to_target));
 
-					float diff_angle = center_to_hinge.angle_to(center_to_target);
-					Vector3 diff_vector = center_to_hinge.cross(center_to_target).normalized();
+					diff_vector = hinge.affine_inverse().get_basis().xform((diff_vector));
+					diff_vector = diff_vector.normalized();
 
-					debug->add_line(hinge.get_origin(), hinge.get_origin() + (diff_vector * 0.4), Color(0,1,0));
-					//debug->add_line(hinge.get_origin(), hinge.get_origin() + cast_to<Hinge>(hinges[i])->get_transform(get_instance_id()).inverse().get_basis().xform((diff_vector * 0.4)), Color(1, 1, 0));
-					//debug->add_line(hinge.get_origin(), hinge.get_origin() + cast_to<Hinge>(hinges[i])->get_transform(get_instance_id()).get_basis().xform((diff_vector * 0.4)), Color(1, 0, 0));
-
-
-					print_line(ObjectDB::get_instance(connections[j]));
-					print_line(diff_angle);
-					print_line(diff_vector);
-					print_line("---");
+					debug->add_line(hinge.get_origin(), hinge.get_origin() + (diff_vector * 0.2), Color(0,1,0));
 
 					cast_to<Hinge>(hinges[i])->set_transform(cast_to<Hinge>(hinges[i])->get_transform(connections[j]).rotated(diff_vector, diff_angle), connections[j]);
 
+
 					part_transforms[connections[j]] = target * cast_to<Hinge>(hinges[i])->get_transform(connections[j]);
+
 
 					cast_to<Part>(ObjectDB::get_instance(connections[j]))->set_global_transform(part_transforms[connections[j]]);
 					simulation_steps++;

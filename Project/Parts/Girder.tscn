@@ -7,6 +7,8 @@
 [sub_resource type="BoxShape3D" id="BoxShape3D_yci7n"]
 
 [node name="Girder" type="Part"]
+lock_rotation = true
+lock_translation = true
 script = ExtResource("1_0yjyb")
 
 [node name="Mesh" type="MeshInstance3D" parent="."]

@@ -11,29 +11,21 @@ script = ExtResource("1_ojg0v")
 
 [node name="Girder" parent="." instance=ExtResource("1_dtqrx")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0118121, 0.00251985, 0.00177296)
-lock_rotation = true
-lock_translation = true
 
 [node name="Girder5" parent="." instance=ExtResource("1_dtqrx")]
 transform = Transform3D(1, 0, 0, 0, 0.864292, -0.50299, 0, 0.50299, 0.864292, -0.384465, 0, 0.00177296)
-lock_translation = true
 
 [node name="Girder6" parent="Girder5" instance=ExtResource("1_dtqrx")]
 transform = Transform3D(1, 0, 0, 0, 0.852121, -0.523347, 0, 0.523347, 0.852121, -0.332993, 0.0109992, -0.00640116)
-lock_translation = true
 
 [node name="Girder7" parent="Girder5/Girder6" instance=ExtResource("1_dtqrx")]
 transform = Transform3D(1, 0, 0, 0, 0.896749, -0.442539, 0, 0.442539, 0.896749, -0.346968, 0, 0)
 
 [node name="Girder2" parent="." instance=ExtResource("1_dtqrx")]
 transform = Transform3D(0.999999, 0, 0, 0, 1, 0, 0, 0, 1, 0.245689, 0, 0)
-lock_rotation = true
-lock_translation = true
 
 [node name="Girder3" parent="." instance=ExtResource("1_dtqrx")]
-transform = Transform3D(1, 0, 0, 0, 0.748134, 0.663548, 0, -0.663548, 0.748134, 0.507308, -0.000307262, 0)
-lock_rotation = true
-lock_translation = true
+transform = Transform3D(1, 0, 0, 0, 0.748134, 0.663548, 0, -0.663548, 0.748134, 0.507214, -0.000307262, 0)
 
 [node name="Girder4" parent="." instance=ExtResource("1_dtqrx")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.773258, 0, 0)
