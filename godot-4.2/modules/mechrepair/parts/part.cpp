@@ -57,9 +57,17 @@ Array Part::solve_to(Transform3D new_transform, PartDebugDraw* debug) {
 	part_transforms[get_instance_id()] = new_transform;
 	set_global_transform(new_transform);
 	part_weight[get_instance_id()] = weight;
+	part_sim_steps[get_instance_id()] = 1;
 
 	//We can control the amount of loops here
 	solve_recursive(part_transforms, part_weight, part_sim_steps, simulation_steps, debug);
+	solve_forward(part_transforms, part_weight, part_sim_steps, simulation_steps, debug);
+
+
+	for (int i = 0; i < part_sim_steps.keys().size(); i++) {
+		Part* p = cast_to<Part>(ObjectDB::get_instance(part_sim_steps.keys()[i]));
+		debug->part_to_lines_cycled(p, part_sim_steps[part_sim_steps.keys()[i]]);
+	}
 
 	//Apply transforms
 	//for (int i = 0; i < part_transforms.size(); i++) {
@@ -87,6 +95,7 @@ bool Part::solve_recursive(Dictionary &part_transforms, Dictionary &part_weight,
 			if (!part_transforms.keys().has(connections[j])) {
 
 				if (cast_to<Hinge>(hinges[i])->locked) {
+					simulation_steps++;
 					Transform3D target = part_transforms[get_instance_id()];
 					target = target * cast_to<Hinge>(hinges[i])->get_transform(get_instance_id()).affine_inverse();
 					target = target * cast_to<Hinge>(hinges[i])->get_transform(connections[j]);
@@ -94,11 +103,10 @@ bool Part::solve_recursive(Dictionary &part_transforms, Dictionary &part_weight,
 					//part_weight[connections[j]] = *cast_to<float>(part_weight[get_instance_id()]) + weight;
 					part_transforms[connections[j]] = target;
 					cast_to<Part>(ObjectDB::get_instance(connections[j]))->set_global_transform(target);
-
-					simulation_steps++;
+					
 					cast_to<Part>(ObjectDB::get_instance(connections[j]))->solve_recursive(part_transforms, part_weight, part_sim_steps, simulation_steps,debug);
 				} else {
-
+					simulation_steps++;
 					//This part space
 					Transform3D target = part_transforms[get_instance_id()];
 
@@ -122,20 +130,25 @@ bool Part::solve_recursive(Dictionary &part_transforms, Dictionary &part_weight,
 					Vector3 diff_vector = center_to_hinge.cross(center_to_target);
 					float diff_angle = Math::atan2(diff_vector.length(), center_to_hinge.dot(center_to_target));
 
-					diff_vector = hinge.affine_inverse().get_basis().xform((diff_vector));
-					diff_vector = diff_vector.normalized();
+					if (diff_vector != Vector3(0,0,0)) {
 
-					debug->add_line(hinge.get_origin(), hinge.get_origin() + (diff_vector * 0.2), Color(0,1,0));
+						diff_vector = hinge.affine_inverse().get_basis().xform((diff_vector));
+						diff_vector = diff_vector.normalized();
 
-					cast_to<Hinge>(hinges[i])->set_transform(cast_to<Hinge>(hinges[i])->get_transform(connections[j]).rotated(diff_vector, diff_angle), connections[j]);
+						debug->add_line(hinge.get_origin(), hinge.get_origin() + (diff_vector * 0.2), Color(0,1,0));
+
+						cast_to<Hinge>(hinges[i])->set_transform(cast_to<Hinge>(hinges[i])->get_transform(connections[j]).rotated(diff_vector, diff_angle), connections[j]);
 
 
-					part_transforms[connections[j]] = target * cast_to<Hinge>(hinges[i])->get_transform(connections[j]);
+						part_transforms[connections[j]] = target * cast_to<Hinge>(hinges[i])->get_transform(connections[j]);//.rotated(diff_vector, diff_angle);
+						float pw = part_weight[get_instance_id()];
+						part_weight[connections[j]] = pw + cast_to<Part>(ObjectDB::get_instance(connections[j]))->weight;
+						part_sim_steps[connections[j]] = 1;
 
-
-					cast_to<Part>(ObjectDB::get_instance(connections[j]))->set_global_transform(part_transforms[connections[j]]);
-					simulation_steps++;
-					cast_to<Part>(ObjectDB::get_instance(connections[j]))->solve_recursive(part_transforms, part_weight, part_sim_steps, simulation_steps, debug);
+						cast_to<Part>(ObjectDB::get_instance(connections[j]))->set_global_transform(part_transforms[connections[j]]);
+						
+						cast_to<Part>(ObjectDB::get_instance(connections[j]))->solve_recursive(part_transforms, part_weight, part_sim_steps, simulation_steps, debug);
+					}
 				}
 			}
 		}
@@ -146,11 +159,29 @@ bool Part::solve_recursive(Dictionary &part_transforms, Dictionary &part_weight,
 
 bool Part::solve_forward(Dictionary &part_transforms, Dictionary &part_weight, Dictionary &part_sim_steps, int &simulation_steps, PartDebugDraw *debug) {
 
+	//start at part with biggest weight
+	//From it, ensure all the hinges are within acceptable limits
+	//Then set adjacent parts to their proper positions (adding them to parts to check again)
+	//recurse || simulation_steps++
 
+	
+	////Update hinges??
+	//for (int i = 0; i < part_transforms.keys().size(); i++) {
+	//	Part* p = cast_to<Part>(ObjectDB::get_instance(part_transforms.keys()[i]));
+	//	for (int j = 0; j < p->hinges.size(); j++) {
+	//		for (int k = 0; k < part_transforms.keys().size(); k++) {
+	//			if (p->cast_to<Hinge>(hinges[j])->get_other_parts(p->get_instance_id()).has(part_transforms.keys()[k])) {
+	//
+	//				
+	//				//backwards calculate for now? When I am going to apply the hinge limits Ill need to do this anyhow!!
+	//
+	//
+	//			}
+	//		}
+	//	}
+	//}
 
-
-
-	return false;
+	return true;
 }
 
 void Part::attach_part_create_average_hinge(Part *p) {

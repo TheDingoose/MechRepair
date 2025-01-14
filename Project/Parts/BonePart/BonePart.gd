@@ -8,9 +8,6 @@ func _init():
 	pass
 
 func _enter_tree():
-	#var h = Hinge.new()
-	#h.set_offset(Vector3(0,1,0), get_instance_id())
-	#add_hinge(h)
 	
 	if (self == $"../Girder2"):
 		attach_part_create_average_hinge($"../Girder")
@@ -20,8 +17,23 @@ func _enter_tree():
 	
 	if (self == $"../Girder4"):
 		attach_part_create_average_hinge($"../Girder3")
+		#attach_part_create_average_hinge($"../Girder6")
+	
+	if (self == $"../Girder6"):
+		attach_part_create_average_hinge($"../Girder4")
+		attach_part_create_average_hinge($"../Girder")
+	
+	if (self == $"../GirderForward4"):
+		attach_part_create_average_hinge($"../GirderForward3")
+	
+	if (self == $"../GirderForward3"):
+		attach_part_create_average_hinge($"../GirderForward2")
+		
+	if (self == $"../GirderForward2"):
+		attach_part_create_average_hinge($"../GirderForward")
 	
 	GlobalPartDebugDraw.part_to_lines(self)
+		
 
 func _process(delta) :
 	
@@ -55,8 +67,8 @@ func _input(event):
 		
 		
 		
-		for p in parts:
-			GlobalPartDebugDraw.part_to_lines(instance_from_id(p))
+		#for p in parts:
+		#	GlobalPartDebugDraw.part_to_lines(instance_from_id(p))
 		
 	if event is InputEventMouseButton:
 		if !event.pressed and event.button_index == MOUSE_BUTTON_LEFT:

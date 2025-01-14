@@ -10,25 +10,31 @@ transform = Transform3D(0.747995, -0.289741, 0.597121, 0, 0.89968, 0.436551, -0.
 script = ExtResource("1_ojg0v")
 
 [node name="Girder" parent="." instance=ExtResource("1_dtqrx")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0118121, 0.00251985, 0.00177296)
-
-[node name="Girder5" parent="." instance=ExtResource("1_dtqrx")]
-transform = Transform3D(1, 0, 0, 0, 0.864292, -0.50299, 0, 0.50299, 0.864292, -0.384465, 0, 0.00177296)
-
-[node name="Girder6" parent="Girder5" instance=ExtResource("1_dtqrx")]
-transform = Transform3D(1, 0, 0, 0, 0.852121, -0.523347, 0, 0.523347, 0.852121, -0.332993, 0.0109992, -0.00640116)
-
-[node name="Girder7" parent="Girder5/Girder6" instance=ExtResource("1_dtqrx")]
-transform = Transform3D(1, 0, 0, 0, 0.896749, -0.442539, 0, 0.442539, 0.896749, -0.346968, 0, 0)
+transform = Transform3D(0.87218, -0.489185, 0, 0.489185, 0.87218, 0, 0, 0, 1, 0.468279, 0.397088, 0.00177296)
 
 [node name="Girder2" parent="." instance=ExtResource("1_dtqrx")]
-transform = Transform3D(0.999999, 0, 0, 0, 1, 0, 0, 0, 1, 0.245689, 0, 0)
+transform = Transform3D(0.338967, 0.940798, 0, -0.940797, 0.338968, 0, 0, 0, 1, 0.33278, 0.171459, 0)
 
 [node name="Girder3" parent="." instance=ExtResource("1_dtqrx")]
 transform = Transform3D(1, 0, 0, 0, 0.748134, 0.663548, 0, -0.663548, 0.748134, 0.507214, -0.000307262, 0)
 
 [node name="Girder4" parent="." instance=ExtResource("1_dtqrx")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.773258, 0, 0)
+transform = Transform3D(0.69854, -0.715571, 0, 0.715571, 0.69854, 0, 0, 0, 1, 0.719864, 0.129726, 0)
+
+[node name="Girder6" parent="." instance=ExtResource("1_dtqrx")]
+transform = Transform3D(-0.771191, -0.636603, 0, 0.636603, -0.771191, 0, 0, 0, 1, 0.702546, 0.356593, 0)
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(0.799266, 0.22739, 0.556298, -0.500922, 0.763493, 0.407622, -0.332041, -0.60446, 0.724139, 0.815666, 0.649727, 0.542404)
+
+[node name="GirderForward" parent="." instance=ExtResource("1_dtqrx")]
+transform = Transform3D(1, 0, 0, 0, 0.119409, 0.992846, 0, -0.992846, 0.119409, 0.0105449, -0.000537187, 0.407835)
+
+[node name="GirderForward2" parent="." instance=ExtResource("1_dtqrx")]
+transform = Transform3D(1, 0, 0, 0, 0.119409, 0.992846, 0, -0.992846, 0.119409, 0.280531, -0.000537187, 0.407835)
+
+[node name="GirderForward3" parent="." instance=ExtResource("1_dtqrx")]
+transform = Transform3D(1, 0, 0, 0, 0.119409, 0.992846, 0, -0.992846, 0.119409, 0.547989, -0.000537187, 0.407835)
+
+[node name="GirderForward4" parent="." instance=ExtResource("1_dtqrx")]
+transform = Transform3D(1, 0, 0, 0, 0.119409, 0.992846, 0, -0.992846, 0.119409, 0.813734, -0.000537187, 0.407835)
