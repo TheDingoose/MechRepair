@@ -11,6 +11,14 @@ void Hinge::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "locked"), "set_locked", "get_locked");
 }
 
+Hinge *Hinge::copy() {
+	Hinge *copy = memnew(Hinge);
+	//copy->transforms = transforms;
+	copy->weight = weight;
+	copy->locked = locked;
+	return copy;
+}
+
 void Hinge::set_transform(Transform3D transform, ObjectID part_id) {
 	transforms[part_id] = transform;
 }

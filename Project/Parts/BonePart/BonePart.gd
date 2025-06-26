@@ -19,7 +19,7 @@ func _enter_tree():
 		attach_part_create_average_hinge($"../Girder3")
 		#attach_part_create_average_hinge($"../Girder6")
 	
-	if (self == $"../Girder6"):
+	if (self == $"../Girder5"):
 		attach_part_create_average_hinge($"../Girder4")
 		attach_part_create_average_hinge($"../Girder")
 	
@@ -36,11 +36,13 @@ func _enter_tree():
 		
 
 func _process(delta) :
-	
 	pass
 
 func _input(event):
-	
+	if event is InputEventKey and event.keycode == KEY_T and Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and grabbed:
+		GlobalPartDebugDraw.clear_lines(true, false)
+		$"../PartSolver".add_target(get_instance_id(), get_transform())
+		$"../PartSolver".solve_ccd(GlobalPartDebugDraw)
 	
 	if event is InputEventMouseMotion and Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and grabbed:
 		var camera = get_viewport().get_camera_3d()
@@ -52,13 +54,18 @@ func _input(event):
 		current_trans.origin = movepos - grab_offset_position	
 		
 		if Input.is_key_pressed(KEY_R):
-			if (self == $"../Girder2"):
-				var hingey = get_hinge_to_part($"../Girder3".get_instance_id())
-				hingey.set_transform(hingey.get_transform($"../Girder3".get_instance_id()).rotated(Vector3(0,0,1), PI /  8), $"../Girder3".get_instance_id())
+			if (self == $"../GirderForward2"):
+				var hingey = get_hinge_to_part($"../GirderForward3".get_instance_id())
+				hingey.set_transform(hingey.get_transform($"../GirderForward3".get_instance_id()).rotated(Vector3(0,0,1), PI /  8), $"../GirderForward3".get_instance_id())
 			pass
 		
+		
+		
+		#GlobalPartDebugDraw.clear_lines(true, false)
+		#var parts = solve_to(current_trans, GlobalPartDebugDraw)
 		GlobalPartDebugDraw.clear_lines(true, false)
-		var parts = solve_to(current_trans, GlobalPartDebugDraw)
+		$"../PartSolver".add_target(get_instance_id(), current_trans)
+		$"../PartSolver".solve_ccd(GlobalPartDebugDraw)
 		
 	
 		

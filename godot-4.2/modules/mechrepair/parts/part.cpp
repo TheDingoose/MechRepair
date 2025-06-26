@@ -3,6 +3,7 @@
 #include "hinge.h"
 #include "../debug/part_debug_draw.h"
 
+#include <shlobj_core.h>
 
 
 constexpr int MAX_SIMULATION_STEPS = 500;
@@ -23,6 +24,19 @@ void Part::_bind_methods() {
 
 }
 
+Part *Part::get_instance(ObjectID part_id) {
+	return cast_to<Part>(ObjectDB::get_instance(part_id));
+}
+
+Part *Part::copy() {
+	Part* copy = memnew(Part);
+	copy->hinges = hinges;
+	copy->weight = weight;
+	copy->lock_rotation = lock_rotation;
+	copy->lock_translation = lock_translation;
+	return copy;
+}
+
 void Part::add_hinge(Hinge* h) {
 	hinges.push_back(h);
 }
@@ -40,6 +54,19 @@ Hinge* Part::get_hinge_to_part(ObjectID part_id) {
 		}
 	}
 	return nullptr;
+}
+
+Array Part::get_connected_parts() {
+	Array parts;
+	for (int i = 0 ; i < hinges.size(); i++) {
+		Array hinge_parts = cast_to<Hinge>(hinges[i])->get_other_parts(get_instance_id());
+		for (int j = 0; j < hinge_parts.size(); j++) {
+			if (!parts.has(hinge_parts[j])) {
+				parts.push_back(hinge_parts[j]);
+			}
+		}
+	}
+	return parts;
 }
 
 Array Part::solve_to(Transform3D new_transform, PartDebugDraw* debug) {
@@ -100,7 +127,6 @@ bool Part::solve_recursive(Dictionary &part_transforms, Dictionary &part_weight,
 					target = target * cast_to<Hinge>(hinges[i])->get_transform(get_instance_id()).affine_inverse();
 					target = target * cast_to<Hinge>(hinges[i])->get_transform(connections[j]);
 
-					//part_weight[connections[j]] = *cast_to<float>(part_weight[get_instance_id()]) + weight;
 					part_transforms[connections[j]] = target;
 					cast_to<Part>(ObjectDB::get_instance(connections[j]))->set_global_transform(target);
 					
@@ -123,7 +149,7 @@ bool Part::solve_recursive(Dictionary &part_transforms, Dictionary &part_weight,
 					debug->add_point(hinge.get_origin(), Color(.75, .25, 0));
 					debug->add_point(target.get_origin(), Color(.5, .5, 0));
 
-					//Get different 
+					//Get difference 
 					Vector3 center_to_hinge = hinge.get_origin() - center.get_origin();
 					Vector3 center_to_target = target.get_origin() - center.get_origin(); 
 
@@ -140,7 +166,7 @@ bool Part::solve_recursive(Dictionary &part_transforms, Dictionary &part_weight,
 						cast_to<Hinge>(hinges[i])->set_transform(cast_to<Hinge>(hinges[i])->get_transform(connections[j]).rotated(diff_vector, diff_angle), connections[j]);
 
 
-						part_transforms[connections[j]] = target * cast_to<Hinge>(hinges[i])->get_transform(connections[j]);//.rotated(diff_vector, diff_angle);
+						part_transforms[connections[j]] = target * cast_to<Hinge>(hinges[i])->get_transform(connections[j]);
 						float pw = part_weight[get_instance_id()];
 						part_weight[connections[j]] = pw + cast_to<Part>(ObjectDB::get_instance(connections[j]))->weight;
 						part_sim_steps[connections[j]] = 1;

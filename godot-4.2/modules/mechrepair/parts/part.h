@@ -19,15 +19,19 @@ protected:
 
 public:
 
+	static Part* get_instance(ObjectID part_id);
+	Part *copy();
+
 	TypedArray<Hinge> hinges;
 	float weight = 1.0f;
-
-	void add_hinge(Hinge* h);
-	void remove_hinge(Hinge* h);
 	bool lock_translation;
 	bool lock_rotation;
 
+	void add_hinge(Hinge* h);
+	void remove_hinge(Hinge* h);
+
 	Hinge* get_hinge_to_part(ObjectID part_id);
+	Array get_connected_parts();
 
 	Array solve_to(Transform3D new_transform, PartDebugDraw *debug);
 	bool solve_recursive(Dictionary &part_transforms, Dictionary &part_weight, Dictionary &part_sim_steps, int &simulation_steps, PartDebugDraw *debug);

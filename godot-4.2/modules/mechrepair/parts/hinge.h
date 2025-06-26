@@ -44,6 +44,8 @@ public:
 	//parts
 	//rotation limit
 
+	Hinge *copy();
+
 	void set_transform(Transform3D transform, ObjectID part_id);
 	Transform3D get_transform(ObjectID part_id);
 	Dictionary get_other_transforms(ObjectID part_id);
